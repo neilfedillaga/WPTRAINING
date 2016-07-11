@@ -105,6 +105,10 @@ class DX_Plugin_Base {
 		
 		// Add Student widget_text
 		add_action( 'widgets_init', array( $this, 'student_widget' ) );
+
+		// Add Student Single post template
+		add_action( 'template_include', array( $this, 'student_load_templates') );
+
 		/*
 		 * TODO:
 		 * 		template_redirect
@@ -301,7 +305,7 @@ class DX_Plugin_Base {
 	        'capability_type'   		=> 'post',
 	        'map_meta_cap'      		=> true,
 	        'rewrite'             => array( 
-	        	'slug' => $slug,
+	        	'slug' => 'student',
 	        	'with_front' => true,
 	        	'pages' => true,
 	        	'feeds' => true,
@@ -474,6 +478,30 @@ class DX_Plugin_Base {
 	public function student_widget() {
 		include_once DXP_PATH_INCLUDES . '/student-widget.class.php';
 	}
+
+	//rendering page student page templates
+	public function student_load_templates( $original_template ) {
+       if ( get_query_var( 'post_type' ) !== 'student' ) {
+               return;
+       }
+       if ( is_archive() || is_search() ) {
+               if ( file_exists( get_stylesheet_directory(). '/archive-student.php' ) ) {
+                     return get_stylesheet_directory() . '/archive-student.php';
+               } else {
+                      return plugin_dir_path( __FILE__ ) . 'inc/archive-student.php';
+               }
+       } elseif(is_singular('student')) {
+               if (  file_exists( get_stylesheet_directory(). '/single-student.php' ) ) {
+                       return get_stylesheet_directory() . '/single-student.php';
+               } else {
+                       return plugin_dir_path( __FILE__ ) . 'inc/single-student.php';
+               }
+       }else{
+       	return get_page_template();
+       }
+        return $original_template;
+	}
+
 
 	/**
 	 * Initialize the Settings class
