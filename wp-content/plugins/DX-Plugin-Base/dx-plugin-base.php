@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: DX Plugin Base
+ * Plugin Name: Student extends DX Plugin Base
  * Description: A plugin framework for building new WordPress plugins reusing the accepted APIs and best practices
  * Plugin URI: http://example.org/
  * Author: nofearinc
@@ -94,14 +94,17 @@ class DX_Plugin_Base {
 		// register save_post hooks for saving the student custom fields
 		add_action( 'save_post', array( $this, 'student_meta_save' ) );
 
-		//add filter to change title to student name
+		// Add filter to change title to student name
 		add_filter( 'enter_title_here', array( $this,'student_default_title') );
-		//add filter to change custom post student default login_messages
+
+		// Add filter to change custom post student default login_messages
 		add_filter( 'post_updated_messages', array( $this,'student_updated_messages') );
-		//add filter to change column
+
+		// Add filter to change column
 		add_filter( 'manage_student_posts_columns', array( $this,'student_set_columns_head') );
 		
-
+		// Add Student widget_text
+		add_action( 'widgets_init', array( $this, 'student_widget' ) );
 		/*
 		 * TODO:
 		 * 		template_redirect
@@ -256,6 +259,75 @@ class DX_Plugin_Base {
 		<?php
 	}
 	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Student Custom Post Type
+	 * Actions Hooks and Filters
+	 *
+	 /	
+	
+	/**
+	 * Register custom post types
+     *
+	 */
+	public function dx_custom_post_types_callback() {
+		register_post_type( 'student', array(
+			'labels' => array(
+				'name' 					=> __("Students", 'dxbase'),
+				'singular_name' 		=> __("Student", 'dxbase'),
+				'add_new' 				=> _x("Add New", 'student', 'dxbase' ),
+				'add_new_item' 			=> __("Add New Student", 'dxbase' ),
+				'edit_item' 			=> __("Edit Student", 'dxbase' ),
+				'new_item' 				=> __("New Student", 'dxbase' ),
+				'view_item' 			=> __("View Student", 'dxbase' ),
+				'search_items'			=> __("Search Students", 'dxbase' ),
+				'not_found' 			=>  __("No students found", 'dxbase' ),
+				'not_found_in_trash'	=> __("No students found in Trash", 'dxbase' ),
+			),
+			'public' 					=> true,
+			'publicly_queryable'		=> true,
+			'query_var' 				=> true,
+			'rewrite' 					=> true,
+			'exclude_from_search' 		=> true,
+			'show_ui' 					=> true,
+			'show_in_menu' 				=> true,
+			'menu_position' 			=> 40, // probably have to change, many plugins use this
+			'menu_icon' 				=> 'dashicons-universal-access',
+			'can_export'         		=> true,
+	        'delete_with_user'   		=> false,
+	        'hierarchical'       		=> false,
+	        'has_archive'       		=> true,
+	        'query_var'         		=> true,
+	        'capability_type'   		=> 'post',
+	        'map_meta_cap'      		=> true,
+	        'rewrite'             => array( 
+	        	'slug' => $slug,
+	        	'with_front' => true,
+	        	'pages' => true,
+	        	'feeds' => true,
+	        ),
+			'supports' => array(
+				'title',
+				'editor',
+				'thumbnail',
+				// 'custom-fields',
+				// 'page-attributes',
+			),
+			'taxonomies' => array( 'post_tag' )
+		));	
+	}
+
+	/**
+	 * Callback function for changing student post title placeholder
+	 */
+	public function student_default_title( $title ){
+	    $screen = get_current_screen();
+	    if ( 'student' == $screen->post_type ){
+	        $title = 'Enter Complete Student Name Here';
+	    }
+	    return $title;
+	}
+
 	/**
 	 * Save the custom field from the side metabox
 	 * @param $post_id the current post ID
@@ -333,69 +405,6 @@ class DX_Plugin_Base {
 		    if ( isset( $_POST[ 'student_id' ] ) ) {
 		      update_post_meta( $post_id, 'student_id', sanitize_text_field( $_POST[ 'student_id' ] ) );
 		    }
-		}
-		
-	
-	/**
-	 * Register custom post types
-     *
-	 */
-	public function dx_custom_post_types_callback() {
-		register_post_type( 'student', array(
-			'labels' => array(
-				'name' 					=> __("Students", 'dxbase'),
-				'singular_name' 		=> __("Student", 'dxbase'),
-				'add_new' 				=> _x("Add New", 'student', 'dxbase' ),
-				'add_new_item' 			=> __("Add New Student", 'dxbase' ),
-				'edit_item' 			=> __("Edit Student", 'dxbase' ),
-				'new_item' 				=> __("New Student", 'dxbase' ),
-				'view_item' 			=> __("View Student", 'dxbase' ),
-				'search_items'			=> __("Search Students", 'dxbase' ),
-				'not_found' 			=>  __("No students found", 'dxbase' ),
-				'not_found_in_trash'	=> __("No students found in Trash", 'dxbase' ),
-			),
-			'public' 					=> true,
-			'publicly_queryable'		=> true,
-			'query_var' 				=> true,
-			'rewrite' 					=> true,
-			'exclude_from_search' 		=> true,
-			'show_ui' 					=> true,
-			'show_in_menu' 				=> true,
-			'menu_position' 			=> 40, // probably have to change, many plugins use this
-			'menu_icon' 				=> 'dashicons-universal-access',
-			'can_export'         		=> true,
-	        'delete_with_user'   		=> false,
-	        'hierarchical'       		=> false,
-	        'has_archive'       		=> true,
-	        'query_var'         		=> true,
-	        'capability_type'   		=> 'post',
-	        'map_meta_cap'      		=> true,
-	        'rewrite'             => array( 
-	        	'slug' => $slug,
-	        	'with_front' => true,
-	        	'pages' => true,
-	        	'feeds' => true,
-	        ),
-			'supports' => array(
-				'title',
-				'editor',
-				// 'thumbnail',
-				// 'custom-fields',
-				// 'page-attributes',
-			),
-			'taxonomies' => array( 'post_tag' )
-		));	
-	}
-
-	/**
-	 * Callback function for changing student post title placeholder
-	 */
-	public function student_default_title( $title ){
-	    $screen = get_current_screen();
-	    if ( 'student' == $screen->post_type ){
-	        $title = 'Enter Complete Student Name Here';
-	    }
-	    return $title;
 	}
 
    	/**
@@ -436,20 +445,20 @@ class DX_Plugin_Base {
 		register_taxonomy( 'student_taxonomy', 'student', array(
 			'hierarchical' => true,
 			'labels' => array(
-				'name' => _x( "Base Item Taxonomies", 'taxonomy general name', 'dxbase' ),
-				'singular_name' => _x( "Base Item Taxonomy", 'taxonomy singular name', 'dxbase' ),
+				'name' => _x( "Stduent Taxonomies", 'taxonomy general name', 'dxbase' ),
+				'singular_name' => _x( "Student Taxonomy", 'taxonomy singular name', 'dxbase' ),
 				'search_items' =>  __( "Search Taxonomies", 'dxbase' ),
 				'popular_items' => __( "Popular Taxonomies", 'dxbase' ),
 				'all_items' => __( "All Taxonomies", 'dxbase' ),
 				'parent_item' => null,
 				'parent_item_colon' => null,
-				'edit_item' => __( "Edit Base Item Taxonomy", 'dxbase' ), 
-				'update_item' => __( "Update Base Item Taxonomy", 'dxbase' ),
-				'add_new_item' => __( "Add New Base Item Taxonomy", 'dxbase' ),
-				'new_item_name' => __( "New Base Item Taxonomy Name", 'dxbase' ),
-				'separate_items_with_commas' => __( "Separate Base Item taxonomies with commas", 'dxbase' ),
-				'add_or_remove_items' => __( "Add or remove Base Item taxonomy", 'dxbase' ),
-				'choose_from_most_used' => __( "Choose from the most used Base Item taxonomies", 'dxbase' )
+				'edit_item' => __( "Edit Student Taxonomy", 'dxbase' ), 
+				'update_item' => __( "Update Student Taxonomy", 'dxbase' ),
+				'add_new_item' => __( "Add New Student Taxonomy", 'dxbase' ),
+				'new_item_name' => __( "New Student Taxonomy Name", 'dxbase' ),
+				'separate_items_with_commas' => __( "Separate Student taxonomies with commas", 'dxbase' ),
+				'add_or_remove_items' => __( "Add or remove Student taxonomy", 'dxbase' ),
+				'choose_from_most_used' => __( "Choose from the most used Student taxonomies", 'dxbase' )
 			),
 			'show_ui' => true,
 			'query_var' => true,
@@ -458,7 +467,14 @@ class DX_Plugin_Base {
 		
 		register_taxonomy_for_object_type( 'student_taxonomy', 'student' );
 	}
-	
+
+    /**
+	 * Hook for including a student widget 
+	 */	
+	public function student_widget() {
+		include_once DXP_PATH_INCLUDES . '/student-widget.class.php';
+	}
+
 	/**
 	 * Initialize the Settings class
 	 * 
