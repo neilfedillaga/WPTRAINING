@@ -109,6 +109,9 @@ class DX_Plugin_Base {
 		// Add Student Single post template
 		add_action( 'template_include', array( $this, 'student_load_templates') );
 
+		// Add a sample shortcode
+		// add_action( 'init', array( $this, 'student_sample_shortcode' ) );
+
 		/*
 		 * TODO:
 		 * 		template_redirect
@@ -481,26 +484,48 @@ class DX_Plugin_Base {
 
 	//rendering page student page templates
 	public function student_load_templates( $original_template ) {
-       if ( get_query_var( 'post_type' ) !== 'student' ) {
-               return;
-       }
-       if ( is_archive() || is_search() ) {
-               if ( file_exists( get_stylesheet_directory(). '/archive-student.php' ) ) {
-                     return get_stylesheet_directory() . '/archive-student.php';
-               } else {
-                      return plugin_dir_path( __FILE__ ) . 'inc/archive-student.php';
-               }
-       } elseif(is_singular('student')) {
-               if (  file_exists( get_stylesheet_directory(). '/single-student.php' ) ) {
-                       return get_stylesheet_directory() . '/single-student.php';
-               } else {
-                       return plugin_dir_path( __FILE__ ) . 'inc/single-student.php';
-               }
-       }else{
-       	return get_page_template();
+       if ( get_query_var( 'post_type' ) == 'student' ) {
+          if ( is_archive() || is_search() ) {
+		           if ( file_exists( get_stylesheet_directory(). '/archive-student.php' ) ) {
+		                 return get_stylesheet_directory() . '/archive-student.php';
+		           } else {
+		                  return plugin_dir_path( __FILE__ ) . 'inc/archive-student.php';
+		           }
+		       } elseif(is_singular('student')) {
+	               if (  file_exists( get_stylesheet_directory(). '/single-student.php' ) ) {
+	                       return get_stylesheet_directory() . '/single-student.php';
+	               } else {
+	                       return plugin_dir_path( __FILE__ ) . 'inc/single-student.php';
+	               }
+		       }else{
+	       			return get_page_template();
+	       		}
        }
         return $original_template;
 	}
+
+	/**
+	 * Register a Student shortcode to be used
+	 * 
+	 * First parameter is the shortcode name, would be used like: [studentcode]
+	 * 
+	 */
+	// public function student_sample_shortcode() {
+	// 	add_shortcode( 'studentcode', array( $this, 'student_sample_shortcode_body' ) );
+	// }
+	
+	/**
+	 * Returns the content of the student shortcode, like [studentcode]
+	 * @param array $attr arguments passed to array, like [studentcode attr1="one" attr2="two"]
+	 * @param string $content optional, could be used for a content to be wrapped, such as [studentcode]somecontnet[/studentcode]
+	 */
+	// public function student_sample_shortcode_body( $attr, $content !== null ) {
+
+
+	// 	return __( 'Sample Output', 'dxbase');
+	// }
+
+
 
 
 	/**
