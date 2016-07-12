@@ -21,7 +21,6 @@ get_header(); ?>
 			?>
 				<?php echo get_the_post_thumbnail( $post->ID, 'thumbnail' ); ?> 
 				<h2>Name:<?php the_title(); ?></h2>
-				
 				<p>About:<?php the_content(); ?></p>
 				<p>Year:<?php echo "$student_year"; ?></p>
 				<p>Section:<?php echo "$student_section"; ?></p>
@@ -29,7 +28,7 @@ get_header(); ?>
 				<p>ID:<?php echo "$student_id"; ?></p>
 					
 			<?php endwhile;  ?>
-			
+
     </main><!-- #main -->
       <?php get_sidebar(); ?>
 </div>

@@ -20,7 +20,6 @@ get_header(); ?>
 			while ( have_posts() ) : the_post();
 
 				get_template_part( 'student', 'archive' ); 
-
 				$student_year = get_post_meta( get_the_ID(), 'student_year', true );			
 				$student_section = get_post_meta( get_the_ID(), 'student_section', true );
 				$student_address = get_post_meta( get_the_ID(), 'student_address', true );
