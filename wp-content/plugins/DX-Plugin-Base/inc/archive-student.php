@@ -18,11 +18,16 @@ get_header(); ?>
     	<?php 
 	    	// Start the loop.
 			while ( have_posts() ) : the_post();
+<<<<<<< HEAD
 				get_template_part( 'student', 'archive' ); 
+=======
+				get_template_part( 'student', 'single' ); 
+>>>>>>> origin/master
 				$student_year = get_post_meta( get_the_ID(), 'student_year', true );			
 				$student_section = get_post_meta( get_the_ID(), 'student_section', true );
 				$student_address = get_post_meta( get_the_ID(), 'student_address', true );
 				$student_id = get_post_meta( get_the_ID(), 'student_id', true );
+<<<<<<< HEAD
 		?>
 			<?php 
 				echo get_the_post_thumbnail( $post->ID, 'thumbnail' ); 
@@ -37,6 +42,19 @@ get_header(); ?>
 			<?php endwhile;  ?>
     </main><!-- #main -->
 
+=======
+			
+				echo get_the_post_thumbnail( $post->ID, 'thumbnail' ); 
+				the_title( sprintf( '<h2 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h2>' ); ?>
+				<p>About:<?php the_excerpt();(); ?></p><br>
+				<p>Year:<?php echo '$student_year'; ?></p><br>
+				<p>Section:<?php echo '$student_section'; ?></p><br>
+				<p>Address:<?php echo '$student_address'; ?></p><br>
+				<p>ID:<?php echo '$student_id'; ?></p><br>
+					
+			<?php endwhile;  ?>// End the loop.
+    </main><!-- #main -->
+>>>>>>> origin/master
       <?php get_sidebar(); ?>
 </div>
 
