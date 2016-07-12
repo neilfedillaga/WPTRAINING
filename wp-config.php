@@ -111,7 +111,8 @@ if ( empty( $table_prefix ) ) {
  * in their development environments.
  */
 if ( ! defined( 'WP_DEBUG' ) ) {
-    define('WP_DEBUG', false);
+    error_reporting(E_ALL); ini_set('display_errors', 1);
+    define('WP_DEBUG', true);
 }
 
 /* Multisite */
@@ -151,3 +152,4 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
+
