@@ -110,7 +110,7 @@ class DX_Plugin_Base {
 		add_action( 'template_include', array( $this, 'student_load_templates') );
 
 		// Add a sample shortcode
-		// add_action( 'init', array( $this, 'student_sample_shortcode' ) );
+		add_action( 'init', array( $this, 'student_shortcode' ) );
 
 		/*
 		 * TODO:
@@ -307,13 +307,16 @@ class DX_Plugin_Base {
 	        'query_var'         		=> true,
 	        'capability_type'   		=> 'post',
 	        'map_meta_cap'      		=> true,
-	        'rewrite'             => array( 
-	        	'slug' => 'student',
-	        	'with_front' => true,
-	        	'pages' => true,
-	        	'feeds' => true,
+	        'show_in_rest'       		=> true,
+	  		'rest_base'          		=> 'student-api',
+	  		'rest_controller_class' 	=> 'WP_REST_Posts_Controller',
+	        'rewrite'             		=> array( 
+	        	'slug' 			=> 'student',
+	        	'with_front' 	=> true,
+	        	'pages' 		=> true,
+	        	'feeds' 		=> true,
 	        ),
-			'supports' => array(
+			'supports' 					=> array(
 				'title',
 				'editor',
 				'thumbnail',
@@ -505,27 +508,45 @@ class DX_Plugin_Base {
 	}
 
 	/**
-	 * Register a Student shortcode to be used
-	 * 
-	 * First parameter is the shortcode name, would be used like: [studentcode]
+	 * Student shortcode callback function
 	 * 
 	 */
-	// public function student_sample_shortcode() {
-	// 	add_shortcode( 'studentcode', array( $this, 'student_sample_shortcode_body' ) );
-	// }
-	
+
+	public function student_display_custom_post_type(){
+	        $args = array(
+	            'post_type' => 'student',
+	            'post_status' => 'publish'
+	        );
+
+	        $string = '';
+	        $query = new WP_Query( $args );
+	        if( $query->have_posts() ){
+	            $string .= '<ul><li>Student List<ul>';
+	            while( $query->have_posts() ){
+	                $query->the_post();
+	                $string .= '<li>' . get_the_title() .'<ul>'.
+	                				'<li> about : '.get_the_content().'</li>'.
+	                				'<li> year : '.get_post_meta( get_the_ID(), 'student_year', true ).'</li>'.
+	                				'<li> section : '.get_post_meta( get_the_ID(), 'student_section', true ).'</li>'.
+	                				'<li> address : '.get_post_meta( get_the_ID(), 'student_address', true ).'</li>'.
+	                				'<li> id : '.get_post_meta( get_the_ID(), 'student_id', true ).'</li>'
+	                		. '</ul></li><hr>';
+	            }
+	            $string .= '</ul></li></ul>';
+	        }
+	        wp_reset_postdata();
+	        return $string;
+	}
+		
+
 	/**
-	 * Returns the content of the student shortcode, like [studentcode]
-	 * @param array $attr arguments passed to array, like [studentcode attr1="one" attr2="two"]
-	 * @param string $content optional, could be used for a content to be wrapped, such as [studentcode]somecontnet[/studentcode]
+	 * Register shortcode
+	 *
+	 *
 	 */
-	// public function student_sample_shortcode_body( $attr, $content !== null ) {
-
-
-	// 	return __( 'Sample Output', 'dxbase');
-	// }
-
-
+	public function student_shortcode() {
+		add_shortcode( 'student_code', array($this,'student_display_custom_post_type') );
+	}
 
 
 	/**
