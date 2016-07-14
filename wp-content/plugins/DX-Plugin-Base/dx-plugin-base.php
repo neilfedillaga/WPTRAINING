@@ -112,6 +112,11 @@ class DX_Plugin_Base {
 		// Add a sample shortcode
 		add_action( 'init', array( $this, 'student_shortcode' ) );
 
+		// Add rest api support for meta fields
+		add_action( 'rest_api_init', array( $this,'student_meta_register_rest') );
+
+		// Add student table list extends WP_List_Table
+		add_action( 'init', array( $this, 'get_student_list'));
 		/*
 		 * TODO:
 		 * 		template_redirect
@@ -472,7 +477,10 @@ class DX_Plugin_Base {
 			),
 			'show_ui' => true,
 			'query_var' => true,
-			'rewrite' => true,
+			'rewrite'           	=> true,
+	  		'show_in_rest'      	=> true,
+	  		'rest_base'          	=> 'student-taxonomies-api',
+	  		'rest_controller_class' => 'WP_REST_Terms_Controller',
 		));
 		
 		register_taxonomy_for_object_type( 'student_taxonomy', 'student' );
@@ -548,6 +556,108 @@ class DX_Plugin_Base {
 		add_shortcode( 'student_code', array($this,'student_display_custom_post_type') );
 	}
 
+	/**
+	 * Rest api for getting custom fields meta data
+	 * 
+	 */
+	function student_meta_register_rest() {
+	    	register_api_field( 'student',
+	        'student_year',
+	        array(
+	            'get_callback'    => 'student_get_year',
+	            'update_callback' => null,
+	            'schema'          => null,
+	        )
+	    );
+
+			register_api_field( 'student',
+	        'student_section',
+	        array(
+	            'get_callback'    => 'student_get_section',
+	            'update_callback' => null,
+	            'schema'          => null,
+	        )
+	    );
+
+			register_api_field( 'student',
+	        'student_address',
+	        array(
+	            'get_callback'    => 'student_get_address',
+	            'update_callback' => null,
+	            'schema'          => null,
+	        )
+	    );
+
+			register_api_field( 'student',
+	        'student_id',
+	        array(
+	            'get_callback'    => 'student_get_id',
+	            'update_callback' => null,
+	            'schema'          => null,
+	        )
+	    );
+	}
+	/**
+	 * Student extends WP_LIST_TABLE
+	 *
+	 */
+	public function get_student_list() {
+    	include_once DXP_PATH_INCLUDES . '/student-list.php';
+	}
+		
+	/**
+	 * Get the value of the "student_year" field
+	 *
+	 * @param array $object Details of current post.
+	 * @param string $field_name Name of field.
+	 * @param WP_REST_Request $request Current request
+	 *
+	 * @return mixed
+	 */
+	public function student_get_year( $object, $field_name, $request ) {
+    	return get_post_meta( $object[ 'id' ], $field_name, true );
+	}
+
+	/**
+	 * Get the value of the "student_section" field
+	 *
+	 * @param array $object Details of current post.
+	 * @param string $field_name Name of field.
+	 * @param WP_REST_Request $request Current request
+	 *
+	 * @return mixed
+	 */
+	public function student_get_section( $object, $field_name, $request ) {
+    	return get_post_meta( $object[ 'id' ], $field_name, true );
+	}
+
+	/**
+	 * Get the value of the "student_address" field
+	 *
+	 * @param array $object Details of current post.
+	 * @param string $field_name Name of field.
+	 * @param WP_REST_Request $request Current request
+	 *
+	 * @return mixed
+	 */
+	public function student_get_address( $object, $field_name, $request ) {
+    	return get_post_meta( get_the_ID(), 'student_address', true );
+	}
+
+	/**
+	 * Get the value of the "student_id" field
+	 * 
+	 * @param array $object Details of current post.
+	 * @param string $field_name Name of field.
+	 * @param WP_REST_Request $request Current request
+	 *
+	 * @return mixed
+	 */
+	public function student_get_id( $object, $field_name, $request ) {
+    	return get_post_meta( $object[ 'id' ], $field_name, true );
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Initialize the Settings class
